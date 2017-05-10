@@ -2,6 +2,7 @@ var map = new Array(10);
 for (var i = 0; i < 10; i++) {
   map[i] = new Array(10);
 }
+var score = 0;
 // Create 2 dimentional array
 
 
@@ -10,6 +11,7 @@ createMap();
 function createMap() {
   // This function fills in the map where you can walk and not
   createOutsideWall();
+  createPoints();
   createPacman();
   var div;
   for (var i = 0; i < map.length; i++) {
@@ -24,6 +26,9 @@ function createMap() {
       }
       else if (map[i][t] == "p") {
         div.className = "pacman"
+      }
+      else if (map[i][t] == 2) {
+        div.className = "point";
       }
       else {
         div.className = "walk";
@@ -72,6 +77,7 @@ function validateMove(direction) {
   console.log("X: "+ PacmanLocationX);
   console.log("Y: "+ PacmanLocationY);
   console.log(direction);
+  checkForPoint(direction);
 
   if (direction == "up") {
     if (map[PacmanLocationY - 1][PacmanLocationX] != 0 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
@@ -101,15 +107,66 @@ function validateMove(direction) {
       renderPage();
     }
   }
+  // Check after the move if we have a point
 }
 function getPacmanLocation() {
   for (var i = 0; i < map.length; i++) {
     for (var t = 0; t < map.length; t++) {
       if (map[i][t] == "p") {
+        // p is pac man
+        // Return pacman location as a array
         return([i, t]);
       }
     }
   }
+}
+function createPoints() {
+  // This funciton creates
+  for (var i = 0; i < map.length; i++) {
+    for (var t = 0; t < map.length; t++) {
+      if (map[i][t] != 0 && map[i][t] != 'p') {
+        // p is pac man
+        // Return pacman location as a array
+        map[i][t] = 2;
+        // 2 is a point
+      }
+    }
+  }
+}
+function checkForPoint(direction) {
+  // This function check if pacman has hit a score and than add it to the score
+  // We check if there is a point before pacman has walked
+  var PacmanLocation = getPacmanLocation();
+
+  if (direction == "up") {
+    if (map[PacmanLocationY - 1][PacmanLocationX] == 2 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      map[PacmanLocationY - 1][PacmanLocationX] = 1;
+      score++;
+    }
+  }
+  else if (direction == "down") {
+    if (map[PacmanLocationY + 1][PacmanLocationX] == 2 && map[PacmanLocationY + 1][PacmanLocationX] != "undefined") {
+      map[PacmanLocationY + 1][PacmanLocationX] = 1;
+      score++;
+    }
+  }
+  else if (direction == "left") {
+    if (map[PacmanLocationY][PacmanLocationX - 1] == 2 && map[PacmanLocationY][PacmanLocationX - 1] != "undefined") {
+      map[PacmanLocationY][PacmanLocationX - 1] = 1;
+      score++;
+    }
+  }
+  else if (direction == "right") {
+    if (map[PacmanLocationY][PacmanLocationX + 1] == 2 && map[PacmanLocationY][PacmanLocationX + 1] != "undefined") {
+      map[PacmanLocationY][PacmanLocationX + 1] = 1;
+      score++;
+    }
+  }
+    displayPoints();
+
+}
+function displayPoints() {
+  document.getElementById('score').innerHTML = "Score: " + score;
 }
 function createOutsideWall() {
   // This function create a border around the map
@@ -180,14 +237,19 @@ function renderPage() {
       else if (map[i][t] == "p") {
         div.className = "pacman"
       }
+      else if (map[i][t] == 2) {
+        div.className = "point";
+      }
       else {
         div.className = "walk";
       }
 
       if (t === 9) {
-
+        // When it is nothing
       }
       else if (t != 9) {
+        // When the vak isn't at the end of the map array
+        // We don't use a float
         div.className += " bord_part";
       }
       div.className += " bord";
