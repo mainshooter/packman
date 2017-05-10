@@ -5,6 +5,10 @@ for (var i = 0; i < 10; i++) {
 var score = 0;
 // Create 2 dimentional array
 
+var timer = 0;
+// This function keeps trac of the time left of eating a ghost
+
+var ghostEatable = 0;
 
 createMap();
 
@@ -13,6 +17,7 @@ function createMap() {
   createOutsideWall();
   createPoints();
   createPacman();
+  createGhostEating();
   var div;
   for (var i = 0; i < map.length; i++) {
     for (var t = 0; t < map.length; t++) {
@@ -29,6 +34,9 @@ function createMap() {
       }
       else if (map[i][t] == 2) {
         div.className = "point";
+      }
+      else if (map[i][t] == 3) {
+        div.className = "ghost";
       }
       else {
         div.className = "walk";
@@ -77,7 +85,7 @@ function validateMove(direction) {
   console.log("X: "+ PacmanLocationX);
   console.log("Y: "+ PacmanLocationY);
   console.log(direction);
-  checkForPoint(direction);
+  checkForPointAndGhost(direction);
 
   if (direction == "up") {
     if (map[PacmanLocationY - 1][PacmanLocationX] != 0 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
@@ -133,7 +141,7 @@ function createPoints() {
     }
   }
 }
-function checkForPoint(direction) {
+function checkForPointAndGhost(direction) {
   // This function check if pacman has hit a score and than add it to the score
   // We check if there is a point before pacman has walked
   var PacmanLocation = getPacmanLocation();
@@ -143,11 +151,19 @@ function checkForPoint(direction) {
       map[PacmanLocationY - 1][PacmanLocationX] = 1;
       score++;
     }
+    else if (map[PacmanLocationY - 1][PacmanLocationX] == 3 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      map[PacmanLocationY - 1][PacmanLocationX] = 1;
+      startGhostEating();
+    }
   }
   else if (direction == "down") {
     if (map[PacmanLocationY + 1][PacmanLocationX] == 2 && map[PacmanLocationY + 1][PacmanLocationX] != "undefined") {
       map[PacmanLocationY + 1][PacmanLocationX] = 1;
       score++;
+    }
+    else if (map[PacmanLocationY + 1][PacmanLocationX] == 3 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      map[PacmanLocationY + 1][PacmanLocationX] = 1;
+      startGhostEating();
     }
   }
   else if (direction == "left") {
@@ -155,15 +171,60 @@ function checkForPoint(direction) {
       map[PacmanLocationY][PacmanLocationX - 1] = 1;
       score++;
     }
+    else if (map[PacmanLocationY][PacmanLocationX - 1] == 3 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      map[PacmanLocationY][PacmanLocationX - 1] = 1;
+      startGhostEating();
+    }
   }
   else if (direction == "right") {
     if (map[PacmanLocationY][PacmanLocationX + 1] == 2 && map[PacmanLocationY][PacmanLocationX + 1] != "undefined") {
       map[PacmanLocationY][PacmanLocationX + 1] = 1;
       score++;
     }
+    else if (map[PacmanLocationY][PacmanLocationX + 1] == 3 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      map[PacmanLocationY][PacmanLocationX + 1] = 1;
+      startGhostEating();
+    }
   }
     displayPoints();
 
+}
+function createGhostEating() {
+  // Create ghost eat candy
+  map[1][4] = 3;
+  map[6][6] = 3;
+  map[8][5] = 3;
+}
+var ghostEatingInterval;
+function startGhostEating() {
+  ghostEatingInterval = setInterval(countdownGhostEating, 1000);
+  timer = 20;
+  ghostEatable = 1;
+  console.log("START");
+}
+function endGhostEating() {
+  clearInterval(ghostEatingInterval);
+  ghostEatable = 0;
+  console.log("END");
+}
+function checkGhostEating() {
+  if (timer == 0) {
+    endGhostEating();
+    return(false);
+  }
+  else {
+    return(true);
+
+  }
+}
+function countdownGhostEating() {
+  console.log(timer);
+  if (timer == 0) {
+    endGhostEating();
+  }
+  else {
+    timer--;
+  }
 }
 function displayPoints() {
   document.getElementById('score').innerHTML = "Score: " + score;
@@ -239,6 +300,9 @@ function renderPage() {
       }
       else if (map[i][t] == 2) {
         div.className = "point";
+      }
+      else if (map[i][t] == 3) {
+        div.className = "ghost";
       }
       else {
         div.className = "walk";
