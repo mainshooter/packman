@@ -10,6 +10,9 @@ var timer = 0;
 
 var ghostEatable = 0;
 
+var lives = 3;
+// The lives of pacman
+
 createMap();
 
 function createMap() {
@@ -286,6 +289,38 @@ function createOutsideWall() {
 
 function createPacman() {
   map[5][4] = "p";
+}
+function clearMap() {
+  for (var i = 0; i < map.length; i++) {
+    for (var t = 0; t < map.length; t++) {
+      map[i][t] = 1;
+    }
+  }
+}
+function resetScore() {
+  score = 0;
+  displayPoints();
+}
+function resetGame() {
+  // This function resets the game after pacman dies
+  clearMap();
+
+  createOutsideWall();
+  createPoints();
+  createPacman();
+  createGhostEating();
+
+
+  renderPage();
+}
+function pacmanDies() {
+  // When pacman dies due to a Ghost
+  if (lives == 0) {
+    resetGame();
+  }
+  else {
+    lives--;
+  }
 }
 function renderPage() {
   for (var i = 0; i < map.length; i++) {
