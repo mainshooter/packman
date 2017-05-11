@@ -589,9 +589,11 @@ function resetGame() {
 
   createOutsideWall();
   createPacman();
-  createGhostEating();
 
   createPoints();
+
+  createGhostEating();
+
   createGhost();
 
   deleteScore();
@@ -679,10 +681,13 @@ function resetBoard() {
 
   createOutsideWall();
   createPacman();
-  createGhostEating();
 
   createPoints();
+
+  createGhostEating();
+
   createGhost();
+
 
   renderPage();
 }
