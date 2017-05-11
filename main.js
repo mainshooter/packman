@@ -99,35 +99,93 @@ function validateMove(direction) {
   console.log(direction);
   checkForPointAndGhostEating(direction);
 
+  if (checkIfPacmanDies(direction) == false) {
+    if (direction == "up") {
+      if (map[PacmanLocationY - 1][PacmanLocationX] != 0 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
+        map[PacmanLocationY - 1][PacmanLocationX] = "p";
+        map[PacmanLocationY][PacmanLocationX] = 1;
+        renderPage();
+      }
+    }
+    else if (direction == "down") {
+      if (map[PacmanLocationY + 1][PacmanLocationX] != 0 && map[PacmanLocationY + 1][PacmanLocationX] != "undefined") {
+        map[PacmanLocationY + 1][PacmanLocationX] = "p";
+        map[PacmanLocationY][PacmanLocationX] = 1;
+        renderPage();
+      }
+    }
+    else if (direction == "left") {
+      if (map[PacmanLocationY][PacmanLocationX - 1] != 0 && map[PacmanLocationY][PacmanLocationX - 1] != "undefined") {
+        map[PacmanLocationY][PacmanLocationX - 1] = "p";
+        map[PacmanLocationY][PacmanLocationX] = 1;
+        renderPage();
+      }
+    }
+    else if (direction == "right") {
+      if (map[PacmanLocationY][PacmanLocationX + 1] != 0 && map[PacmanLocationY][PacmanLocationX + 1] != "undefined") {
+        map[PacmanLocationY][PacmanLocationX + 1] = "p";
+        map[PacmanLocationY][PacmanLocationX] = 1;
+        renderPage();
+      }
+    }
+  }
+  else {
+    // Pacman dies
+    pacmanDies();
+  }
+  // Check after the move if we have a point
+}
+function checkIfPacmanDies(direction) {
+  // This function checks if pacman dies
+  // It checks if pacman touch a ghost
+  var pacmanLocation = getPacmanLocation();
+  var ghostLocation = getGhostLocation();
+
+  console.log("PACMAN DIES: " + getPacmanLocation());
+
+  var PacmanLocationX = pacmanLocation[1];
+  var pacmanLocationY = pacmanLocation[0];
+
+  console.log("direction: "+ direction);
+
   if (direction == "up") {
-    if (map[PacmanLocationY - 1][PacmanLocationX] != 0 && map[PacmanLocationY - 1][PacmanLocationX] != "undefined") {
-      map[PacmanLocationY - 1][PacmanLocationX] = "p";
-      map[PacmanLocationY][PacmanLocationX] = 1;
-      renderPage();
+    if (map[pacmanLocationY - 1][PacmanLocationX] == 4 || map[pacmanLocationY - 1][PacmanLocationX] == 5 && map[pacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      return(true);
+    }
+    else {
+      return(false);
     }
   }
   else if (direction == "down") {
-    if (map[PacmanLocationY + 1][PacmanLocationX] != 0 && map[PacmanLocationY + 1][PacmanLocationX] != "undefined") {
-      map[PacmanLocationY + 1][PacmanLocationX] = "p";
-      map[PacmanLocationY][PacmanLocationX] = 1;
-      renderPage();
+    if (map[pacmanLocationY + 1][PacmanLocationX] == 4 || map[pacmanLocationY - 1][PacmanLocationX] == 5 && map[pacmanLocationY + 1][PacmanLocationX] != "undefined") {
+      return(true);
+    }
+    else {
+      return(false);
     }
   }
   else if (direction == "left") {
-    if (map[PacmanLocationY][PacmanLocationX - 1] != 0 && map[PacmanLocationY][PacmanLocationX - 1] != "undefined") {
-      map[PacmanLocationY][PacmanLocationX - 1] = "p";
-      map[PacmanLocationY][PacmanLocationX] = 1;
-      renderPage();
+    if (map[pacmanLocationY][PacmanLocationX - 1] == 5 || map[pacmanLocationY - 1][PacmanLocationX] == 4 && map[pacmanLocationY][PacmanLocationX - 1] != "undefined") {
+      return(true);
+    }
+    else {
+      return(false);
     }
   }
   else if (direction == "right") {
-    if (map[PacmanLocationY][PacmanLocationX + 1] != 0 && map[PacmanLocationY][PacmanLocationX + 1] != "undefined") {
-      map[PacmanLocationY][PacmanLocationX + 1] = "p";
-      map[PacmanLocationY][PacmanLocationX] = 1;
-      renderPage();
+    if (map[pacmanLocationY][PacmanLocationX + 1] == 4 || map[pacmanLocationY - 1][PacmanLocationX] == 5 && map[pacmanLocationY][PacmanLocationX + 1] != "undefined") {
+      return(true);
+    }
+    else {
+      return(false);
     }
   }
-  // Check after the move if we have a point
+
+
+  if (pacmanLocation[0] == ghostLocation[0] && pacmanLocation[1] == ghostLocation[1]) {
+    // Same Y cordinate and X
+    return(true);
+  }
 }
 function getPacmanLocation() {
   for (var i = 0; i < map.length; i++) {
@@ -267,7 +325,7 @@ function moveGhostToPlayer() {
     console.log("right");
     // right
     if (checkForWall("right") == false) {
-      if (checkIfPacmanDies("right") == false) {
+      if (checkIfPacmanDiesGhost("right") == false) {
         if (checkForPoint("right") == true) {
           // There is a point on the next block
           // So we display the ghost with a diffrent number so we can after replace the block
@@ -290,7 +348,7 @@ function moveGhostToPlayer() {
     console.log("left");
     console.log(checkForWall("left"));
     if (checkForWall("left") == false) {
-      if (checkIfPacmanDies("left") == false) {
+      if (checkIfPacmanDiesGhost("left") == false) {
         if (checkForPoint("left") == true) {
           // There is a point on the next block
           // So we display the ghost with a diffrent number so we can after replace the block
@@ -313,7 +371,7 @@ function moveGhostToPlayer() {
     // UP
     console.log("up");
     if (checkForWall("up") == false) {
-      if (checkIfPacmanDies("up") == false) {
+      if (checkIfPacmanDiesGhost("up") == false) {
         if (checkForPoint("up") == true) {
           // There is a point on the next block
           // So we display the ghost with a diffrent number so we can after replace the block
@@ -335,7 +393,7 @@ function moveGhostToPlayer() {
     // Down
     console.log("Down");
     if (checkForWall("down") == false) {
-      if (checkIfPacmanDies("down") == false) {
+      if (checkIfPacmanDiesGhost("down") == false) {
         if (checkForPoint("down") == true) {
           // There is a point on the next block
           // So we display the ghost with a diffrent number so we can after replace the block
@@ -354,8 +412,7 @@ function moveGhostToPlayer() {
     }
   }
   map[ghostLocationY][ghostLocationX] = 1;
-  checkIfPacmanDies();
-  if (checkIfPacmanDies() == true) {
+  if (checkIfPacmanDiesGhost("none") == true) {
     // If the ghost is on the same block as pacman
     pacmanDies();
   }
@@ -531,10 +588,10 @@ function resetGame() {
   clearMap();
 
   createOutsideWall();
-  createPoints();
   createPacman();
   createGhostEating();
 
+  createPoints();
   createGhost();
 
   deleteScore();
@@ -545,13 +602,14 @@ function deleteScore() {
   score = 0;
   displayPoints();
 }
-function checkIfPacmanDies(direction) {
+function checkIfPacmanDiesGhost(direction) {
   // This function checks if the ghost and pacman are on the same platform
   // If it is it returns true
+  // Thjis function is used for the ghost
   var pacmanLocation = getPacmanLocation();
   var ghostLocation = getGhostLocation();
 
-  console.log("PACMAN DIES: " + getPacmanLocation());
+  console.log("PACMAN DIES GHOST: " + getPacmanLocation());
 
   var ghostLocation = getGhostLocation();
   console.log(ghostLocation);
@@ -620,10 +678,10 @@ function resetBoard() {
   clearMap();
 
   createOutsideWall();
-  createPoints();
   createPacman();
   createGhostEating();
 
+  createPoints();
   createGhost();
 
   renderPage();
