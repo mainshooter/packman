@@ -130,11 +130,12 @@ function validateMove(direction) {
     }
   }
   else {
-    // Pacman dies
-    pacmanDies();
+    console.log(checkIfPacmanCanEatGhost());
+      // Pacman dies
+      pacmanDies();
+    }
   }
   // Check after the move if we have a point
-}
 function checkIfPacmanDies(direction) {
   // This function checks if pacman dies
   // It checks if pacman touch a ghost
@@ -150,6 +151,9 @@ function checkIfPacmanDies(direction) {
 
   if (direction == "up") {
     if (map[pacmanLocationY - 1][PacmanLocationX] == 4 || map[pacmanLocationY - 1][PacmanLocationX] == 5 && map[pacmanLocationY - 1][PacmanLocationX] != "undefined") {
+      if (checkIfPacmanCanEatGhost()) {
+
+      }
       return(true);
     }
     else {
@@ -271,11 +275,13 @@ function createGhostEating() {
 }
 var ghostEatingInterval;
 function startGhostEating() {
+  console.log("You can eat");
   ghostEatingInterval = setInterval(countdownGhostEating, 1000);
   timer = 20;
   ghostEatable = 1;
 }
 function endGhostEating() {
+  console.log("You can't eat");
   clearInterval(ghostEatingInterval);
   ghostEatable = 0;
 }
@@ -310,6 +316,12 @@ function getGhostLocation() {
       }
     }
   }
+}
+function replace_old_block_ghost() {
+  // This function replace the old block that the ghost was standing on
+  var ghostLocation = getGhostLocation();
+
+  var ghostLocationX = '';
 }
 function moveGhostToPlayer() {
   // This function moves the ghost to pacman
@@ -603,6 +615,28 @@ function resetGame() {
 function deleteScore() {
   score = 0;
   displayPoints();
+}
+function checkIfPacmanCanEatGhost() {
+  if (timer >= 0) {
+    // If the timer has time left
+    return(true);
+  }
+  else {
+    return(false);
+  }
+}
+function eatGhost() {
+  var locationGhost = getGhostLocation();
+
+  if (map[locationGhost[0]][locationGhost[1]] == 4) {
+    // The ghost location didn't had a score
+    map[locationGhost[0]][locationGhost[1]] = 1;
+  }
+  else if (map[locationGhost[0]][locationGhost[1]] == 5) {
+    // Ghost location had a score
+    map[locationGhost[0]][locationGhost[1]] = 2;
+  }
+  setTimeout(createGhost, 500);
 }
 function checkIfPacmanDiesGhost(direction) {
   // This function checks if the ghost and pacman are on the same platform
