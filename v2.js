@@ -7,6 +7,8 @@ var game;
 var pacman;
 // Pacman object
 
+var ghost;
+
 var score = 0;
 
 
@@ -88,6 +90,95 @@ var score = 0;
     }
   }
 })();
+
+(function() {
+  ghost = {
+    create: function() {
+      // Loads the map
+      map[3][8] = 4;
+    },
+    locate: function() {
+      for (var i = 0; i < map.length; i++) {
+        for (var t = 0; t < map.length; t++) {
+          if (map[i][t] == 4 || map[i][t] == 5) {
+
+            return([i, t]);
+            // y , x cordinates
+          }
+        }
+      }
+    },
+    move: function() {
+      // Handels the movement of the ghost
+      var nextCordinates = ghost.nextLocation();
+      console.log(nextCordinates);
+
+      if (game.detectBorder(nextCordinates[1], nextCordinates[0]) == false) {
+        // If the computer doen't hit a border
+        if (game.detectScore(nextCordinates[1], nextCordinates[0]) == false) {
+          // No score on postion we place a normal ghost 4
+          ghost.replacePreviousLocation();
+          map[nextCordinates[0]][nextCordinates[1]] = 4;
+        }
+        else {
+          // Place contains a score
+          // Place ghost 5
+          // After the ghost leaves the block
+          // The score returns
+          ghost.replacePreviousLocation();
+          map[nextCordinates[0]][nextCordinates[1]] = 5;
+        }
+      }
+      game.renderMap();
+    },
+    replacePreviousLocation: function() {
+      // This function replaces the old position that the ghost was on
+      // If it was a 5 we replace it with a point(2)
+      // If it is a 4 we replace it wit 1
+      var ghostLocation = ghost.locate();
+
+      if (map[ghostLocation[0]][ghostLocation[1]] == 5) {
+        map[ghostLocation[0]][ghostLocation[1]] = 2;
+      }
+      else if (map[ghostLocation[0]][ghostLocation[1]] == 3) {
+        map[ghostLocation[0]][ghostLocation[1]] = 1;
+      }
+      else {
+        map[ghostLocation[0]][ghostLocation[1]] = 1;
+      }
+    },
+    nextLocation: function() {
+      // Calculate the next direction based on the location of pacman
+
+      var pacmanLocation = pacman.locate();
+
+      var ghostLocation = ghost.locate();
+      var ghostLocationX = ghostLocation[1];
+      var ghostLocationY = ghostLocation[0];
+
+      var nextdirection;
+
+      if (ghostLocation[1] < pacmanLocation[1]) {
+        // right
+        nextdirection = [ghostLocationY, ghostLocationX + 1];
+      }
+      else if (ghostLocation[1] > pacmanLocation[1]) {
+        // left
+        nextdirection = [ghostLocationY, ghostLocationX - 1];
+      }
+      else if (ghostLocation[0] > pacmanLocation[0]) {
+        // up
+        nextdirection = [ghostLocationY - 1,ghostLocationX];
+      }
+      else if (ghostLocation[0] < pacmanLocation[0]) {
+        // down
+        nextdirection = [ghostLocationY + 1, ghostLocationX];
+      }
+      return(nextdirection);
+    }
+  }
+})();
+
 (function() {
   game = {
       detectBorder: function(x, y) {
@@ -165,10 +256,6 @@ var score = 0;
             document.getElementById("map").appendChild(div);
           }
         }
-      },
-      createGhost: function() {
-        // Loads the map
-        map[3][8] = 4;
       },
       renderMap: function() {
         for (var i = 0; i < map.length; i++) {
@@ -273,6 +360,7 @@ var score = 0;
         game.createGhostCandy();
 
         pacman.create();
+        ghost.create();
 
         game.renderMap();
       },
@@ -284,6 +372,7 @@ var score = 0;
         game.createGhostCandy();
 
         pacman.create();
+        ghost.create();
 
         game.renderMap();
       },
