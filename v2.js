@@ -7,9 +7,10 @@ var game;
 var pacman;
 // Pacman object
 
+var score = 0;
+
 
 // Events listners
-
 (function() {
   pacman = {
     create: function() {
@@ -54,13 +55,24 @@ var pacman;
       var direction = game.detectKey(event);
       // Get the current direction
 
+      var pacmanLocation = pacman.locate();
+
       var nextCordinates = pacman.nextDirection(direction);
       // Get the next cordinates
-      console.log(nextCordinates);
-      // console.log(game.detectBorder(nextCordinates[1], nextCordinates[0]));
+
       if (game.detectBorder(nextCordinates[1], nextCordinates[0]) == false) {
         pacman.removePrevious();
         // Removes the previous pacman
+
+        if (game.detectScore(nextCordinates[0], nextCordinates[1]) == true) {
+          // Checks for score
+          game.addScore();
+          // Adds a score
+          game.displayPoints();
+          // Displayes the score
+
+          // Score on the bord will automaticly be removed when pacman is placed
+        }
         map[nextCordinates[0]][nextCordinates[1]] = 'p';
         // Set pacman to his new location
       }
@@ -89,6 +101,21 @@ var pacman;
             else {
               return(false);
         }
+      },
+      detectScore: function(x, y) {
+        // Detects if a score if hit
+        // Returns true when it does
+        if (map[x][y] == 2) {
+          return(true);
+        }
+        else {
+          return(false);
+        }
+      },
+      deleteScorePosition: function(x, y) {
+        // This function deletes the score on the map
+        // After the score is added
+        map[x][y] = 1;
       },
       createMap: function() {
         // Create the map when it loads for the first time
@@ -261,7 +288,7 @@ var pacman;
         game.renderMap();
       },
       displayPoints: function() {
-        document.getElementById('id').innerHTML = "Score: " + score;
+        document.getElementById('score').innerHTML = "Score: " + score;
       },
       addScore: function() {
         // Adds a score when pacman eats a point
