@@ -10,14 +10,13 @@ var pacman;
 var ghost;
 
 var score = 0;
-
-
-// Events listners
+var lives = 3;
 (function() {
   pacman = {
     create: function() {
       map[5][4] = "p";
     },
+
     locate: function() {
       // Locates pacman by the map array
       for (var i = 0; i < map.length; i++) {
@@ -29,6 +28,12 @@ var score = 0;
           }
         }
       }
+    },
+    die: function() {
+      console.log("DIED");
+      // alert("DIED");
+      game.resetMap();
+      game.removeOneLive();
     },
     nextDirection: function(direction) {
       // This function calculates the next postion with direction
@@ -61,6 +66,8 @@ var score = 0;
 
       var nextCordinates = pacman.nextDirection(direction);
       // Get the next cordinates
+
+      game.checkIfPacmanDies(direction, 'p');
 
       if (game.detectBorder(nextCordinates[1], nextCordinates[0]) == false) {
         pacman.removePrevious();
@@ -203,6 +210,46 @@ var score = 0;
           return(false);
         }
       },
+      resetLives: function() {
+        lives = 3;
+      },
+      removeOneLive: function() {
+        // This function removes one live from pacman
+        lives--;
+      },
+      displayLives: function() {
+        document.getElementById('lives').innerHTML = "Lives: " + lives;
+      },
+      checkIfPacmanDies: function(direction, turn) {
+        console.log("run");
+        console.log("Direction: " + direction);
+        console.log("Turn: " + turn);
+        // This function checks if pacman dies by the new direction
+
+        // Direction contains witch way we are going
+        // Turn contains whos moveing pacman or the ghost
+        var pacmanNextLocation = pacman.nextDirection(direction);
+        var ghostLocation = ghost.nextLocation();
+
+        if (turn == 'p') {
+          // Pacman
+          var ghostCurrentLocation = ghost.locate();
+
+          console.log("Ghost current location: " + ghostCurrentLocation);
+          console.log("Next pacman location" + pacmanNextLocation);
+
+          if (ghostCurrentLocation[0] == pacmanNextLocation[0] && ghostCurrentLocation[1] == pacmanNextLocation[1]) {
+            pacman.die();
+          }
+        }
+        else if (turn == 'g') {
+          // Ghost
+          var pacmanCurrentLocation = pacman.locate();
+          if (pacmanCurrentLocation[0] == ghostLocation[0] && pacmanCurrentLocation[1] == ghostLocation[1]) {
+            pacman.die();
+          }
+        }
+      },
       deleteScorePosition: function(x, y) {
         // This function deletes the score on the map
         // After the score is added
@@ -301,7 +348,6 @@ var score = 0;
         }
       },
       createBorder: function() {
-        console.log("RUN");
         for (var i = 0; i < 9; i++) {
           map[0][i] = 0;
           // Creates the top border
@@ -324,6 +370,7 @@ var score = 0;
         // pacman is p
 
         map[9][9] = 0;
+        // To fix last map location border isn't created
       },
       createPoints: function() {
         // Create the points that pacman can eat
@@ -370,6 +417,9 @@ var score = 0;
         game.createBorder();
         game.createPoints();
         game.createGhostCandy();
+
+        game.resetLives();
+        game.displayLives()
 
         pacman.create();
         ghost.create();
