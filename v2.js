@@ -7,8 +7,89 @@ var game;
 var pacman;
 // Pacman object
 
+
+// Events listners
+
+(function() {
+  pacman = {
+    create: function() {
+      map[5][4] = "p";
+    },
+    locate: function() {
+      // Locates pacman by the map array
+      for (var i = 0; i < map.length; i++) {
+        for (var t = 0; t < map.length; t++) {
+          if (map[i][t] == 'p') {
+
+            return([i, t]);
+            // y , x cordinates
+          }
+        }
+      }
+    },
+    nextDirection: function(direction) {
+      // This function calculates the next postion with direction
+      var PacmanLocation = pacman.locate();
+      var PacmanLocationX = PacmanLocation[1];
+      var PacmanLocationY = PacmanLocation[0];
+
+      var nextdirection;
+
+      if (direction == "up") {
+          nextdirection = [PacmanLocationY - 1,PacmanLocationX];
+      }
+      else if (direction == "down") {
+        nextdirection = [PacmanLocationY + 1, PacmanLocationX];
+      }
+      else if (direction == "left") {
+        nextdirection = [PacmanLocationY, PacmanLocationX - 1];
+      }
+      else if (direction == "right") {
+        nextdirection = [PacmanLocationY, PacmanLocationX + 1];
+      }
+      return(nextdirection);
+    },
+    move: function(event) {
+      // Moves pacman
+      var direction = game.detectKey(event);
+      // Get the current direction
+
+      var nextCordinates = pacman.nextDirection(direction);
+      // Get the next cordinates
+      console.log(nextCordinates);
+      // console.log(game.detectBorder(nextCordinates[1], nextCordinates[0]));
+      if (game.detectBorder(nextCordinates[1], nextCordinates[0]) == false) {
+        pacman.removePrevious();
+        // Removes the previous pacman
+        map[nextCordinates[0]][nextCordinates[1]] = 'p';
+      }
+      game.renderMap();
+    },
+    removePrevious: function() {
+      // This function removes pacman from the block where it first stant on
+      var PacmanLocation = pacman.locate();
+      var PacmanLocationX = PacmanLocation[1];
+      var PacmanLocationY = PacmanLocation[0];
+
+      map[PacmanLocationY][PacmanLocationX] = 1;
+    }
+  }
+})();
+
 (function() {
   game = {
+      detectBorder: function(x, y) {
+        // Detects the border
+        // By the next direction
+            if (map[x][y] == 0) {
+              return(true);
+              // Detects the border
+              // When it does it returns true
+            }
+            else {
+              return(false);
+        }
+      },
       createMap: function() {
         // Create the map when it loads for the first time
 
@@ -164,6 +245,8 @@ var pacman;
         game.createPoints();
         game.createGhostCandy();
 
+        pacman.create();
+
         game.renderMap();
       },
       startMap: function() {
@@ -172,6 +255,8 @@ var pacman;
         game.createBorder();
         game.createPoints();
         game.createGhostCandy();
+
+        pacman.create();
 
         game.renderMap();
       },
@@ -186,17 +271,38 @@ var pacman;
         // Detects a key press
         // Returns the translated keypress
         var keytranslate;
+        keycode = keycode.keyCode;
         switch (keycode) {
           case 119:
+          // a
+            keytranslate = 'up';
+            break;
+          case 87:
+          // A
             keytranslate = 'up';
             break;
           case 115:
+          //s
+            keytranslate = 'down';
+            break;
+          case 68:
+            // S
             keytranslate = 'down';
             break;
           case 97:
+            // a
+            keytranslate = 'left';
+            break;
+          case 65:
+            // A
             keytranslate = 'left';
             break;
           case 100:
+            // d
+            keytranslate = 'right';
+            break;
+          case 68:
+            // D
             keytranslate = 'right';
             break;
         }
@@ -205,26 +311,4 @@ var pacman;
   }
 })();
 game.startMap();
-
-(function() {
-  pacman = {
-    createPacman: function() {
-      map[5][4] = "p";
-    },
-    locatePacman: function() {
-      // Locates pacman by the map array
-      for (var i = 0; i < map.length; i++) {
-        for (var t = 0; t < map.length; t++) {
-          if (map[i][t] == 'p') {
-
-            return([i, t]);
-            // y , x cordinates
-          }
-        }
-      }
-    },
-    movePacman: function() {
-
-    }
-  }
-});
+document.addEventListener("keypress", pacman.move);
