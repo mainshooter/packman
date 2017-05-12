@@ -62,6 +62,7 @@ var pacman;
         pacman.removePrevious();
         // Removes the previous pacman
         map[nextCordinates[0]][nextCordinates[1]] = 'p';
+        // Set pacman to his new location
       }
       game.renderMap();
     },
@@ -75,7 +76,6 @@ var pacman;
     }
   }
 })();
-
 (function() {
   game = {
       detectBorder: function(x, y) {
