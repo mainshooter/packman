@@ -240,6 +240,7 @@ var lives = 3;
 
           if (ghostCurrentLocation[0] == pacmanNextLocation[0] && ghostCurrentLocation[1] == pacmanNextLocation[1]) {
             pacman.die();
+            game.displayLives();
           }
         }
         else if (turn == 'g') {
@@ -370,6 +371,7 @@ var lives = 3;
         // pacman is p
 
         map[9][9] = 0;
+        console.log(map);
         // To fix last map location border isn't created
       },
       createPoints: function() {
@@ -390,6 +392,7 @@ var lives = 3;
             map[i][t] = 1;
           }
         }
+        map[9][9] = 1;
       },
       createGhostCandy: function() {
         // This function creates the candy that pacman can eat a ghost
@@ -399,17 +402,16 @@ var lives = 3;
       },
       resetMap: function() {
         // This function resets the map when pacman dies
-        game.clearMap();
+        console.log("RUN");
+        setTimeout(game.clearMap, 9);
+        setTimeout(game.createBorder, 10);
+        setTimeout(game.createGhostCandy, 11);
+        setTimeout(pacman.create, 12);
+        setTimeout(ghost.create, 13);
 
-        game.createMap();
-        game.createBorder();
-        game.createPoints();
-        game.createGhostCandy();
-
-        pacman.create();
-        ghost.create();
-
-        game.renderMap();
+        setTimeout(game.createPoints, 14);
+        setTimeout(game.renderMap, 15);
+        // To fix that functions are running next to each other we run them seperatly
       },
       startMap: function() {
         // This function starts the game
