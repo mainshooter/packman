@@ -32,8 +32,15 @@ var lives = 3;
     die: function() {
       console.log("DIED");
       // alert("DIED");
-      game.resetMap();
-      game.removeOneLive();
+
+      if (lives == 0) {
+        // When no lives are left
+        game.end();
+      }
+      else {
+        game.resetMap();
+        game.removeOneLive();
+      }
     },
     nextDirection: function(direction) {
       // This function calculates the next postion with direction
@@ -220,6 +227,12 @@ var lives = 3;
       displayLives: function() {
         document.getElementById('lives').innerHTML = "Lives: " + lives;
       },
+      end: function() {
+        // This function runs when the game is over and the player has 0 lives left
+        // Resets the game
+        alert("Game is gonne reset, you are out of lives");
+        game.reset();
+      },
       checkIfPacmanDies: function(direction, turn) {
         console.log("run");
         console.log("Direction: " + direction);
@@ -400,6 +413,23 @@ var lives = 3;
         map[6][6] = 3;
         map[8][5] = 3;
       },
+      reset: function() {
+        // This function runs to reset the game
+        // This happends when pacman has 0 lives left
+        setTimeout(game.resetScore, 7);
+        setTimeout(game.resetLives, 8);
+
+        setTimeout(game.clearMap, 9);
+        setTimeout(game.createBorder, 10);
+        setTimeout(game.createGhostCandy, 11);
+        setTimeout(pacman.create, 12);
+        setTimeout(ghost.create, 13);
+        setTimeout(game.createPoints, 14);
+
+        setTimeout(game.renderMap, 15);
+        setTimeout(game.displayLives, 16);
+        setTimeout(game.displayPoints, 17);
+      },
       resetMap: function() {
         // This function resets the map when pacman dies
         console.log("RUN");
@@ -434,6 +464,10 @@ var lives = 3;
       addScore: function() {
         // Adds a score when pacman eats a point
         score++;
+      },
+      resetScore: function() {
+        // This fucntion resets the score to 0
+        score = 0;
       },
       detectKey: function(keycode) {
         // Detects a key press
